@@ -2,8 +2,11 @@
 
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.table.TableRowSorter;
+import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 
 public class SimpleClock extends JFrame {
@@ -19,6 +22,11 @@ public class SimpleClock extends JFrame {
         String time;
         String day;
         String date;
+
+        JButton localGMT;
+        JButton militaryTime;
+        boolean isMilitary = false;
+        boolean isGMT = false;
 
         SimpleClock() {
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,14 +48,41 @@ public class SimpleClock extends JFrame {
     
             dateLabel=new JLabel();
             dateLabel.setFont(new Font("Ink Free",Font.BOLD,30));
+
+            militaryTime = new JButton("Military/Standard");
+            militaryTime.addActionListener(this :: timeZone);
     
     
             this.add(timeLabel);
             this.add(dayLabel);
             this.add(dateLabel);
+            this.add(militaryTime);
+            this.add(localGMT);
             this.setVisible(true);
     
             setTimer();
+        }
+
+        private void timeZone(ActionEvent actionEvent){
+            if(isGMT){
+                timeFormat.setTimeZone(TimeZone.getDefault());
+                isGMT = false;
+            } else {
+                timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+                isGMT = true;
+            }
+        }
+
+        public void militaryStandard(ActionEvent actionEvent){
+            if(isMilitary){
+                timeFormat = new SimpleDateFormat("hh:mm:ss a");
+                isMilitary = false;
+            } else {
+                timeFormat = new SimpleDateFormat("HH:mm:ss ");
+                isMilitary = true;
+            }
+            time = timeFormat.format(Calendar.getInstance().getTime());
+            timeLabel.setText(time);
         }
     
         public void setTimer() {
